@@ -9,25 +9,37 @@
 import Foundation
 import UIKit
 
-class DraggableButton: UISlider {
+protocol DraggableButtonDelegate {
+    func didBeginMoving(button: DraggableButton, inView: UIView)
+}
+
+class DraggableButton: UIButton {
     var isLeft = true
     var isLocked = false
     
-    var dragRange = 0.0...9.0
-    var startPoint = 0.0
-    var endPoint = 10.0
-    var basePoint = 5.0
+    var dragRange = CGFloat()...CGFloat()
+    var startPoint = CGFloat()
+    var endPoint = CGFloat()
+    var tagPoint = CGFloat()
     var currentPosition = CGFloat()
-    init(isLeft: Bool) {
+    
+    let pan = UIPanGestureRecognizer(target: self, action: #selector(panButton(pan:)))
+    
+    required init(startPt: CGFloat, endPt: CGFloat, tagPt: CGFloat, isLeft: Bool) {
         super.init(frame: CGRect.zero)
         if isLeft {
-            dragRange = startPoint...basePoint
+            dragRange = startPt...tagPt
         } else {
-            dragRange = basePoint...endPoint
+            dragRange = tagPt...endPt
         }
-        
+        self.addGestureRecognizer(pan)
     }
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
+    }
+    
+    @objc func panButton(pan: UIPanGestureRecognizer) {
+        let location = pan.location(in: self.superview) // get pan location
+        self.center.x = location.x // set button to where finger is
     }
 }
