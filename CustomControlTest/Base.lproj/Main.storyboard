@@ -18,8 +18,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Byu-Cg-JbI" customClass="RangeSlider" customModule="CustomControlTest">
-                                <rect key="frame" x="45" y="269" width="284" height="128"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Byu-Cg-JbI" customClass="RangeSlider" customModule="CustomControlTest">
+                                <rect key="frame" x="45" y="279.5" width="284" height="128"/>
                                 <color key="backgroundColor" white="0.75" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="284" id="cme-ES-F7n"/>
@@ -37,6 +37,23 @@
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="color" keyPath="colorOutsideHandles">
                                         <color key="value" red="0.060189664363861084" green="0.11396355181932449" blue="0.0015560905449092388" alpha="0.89734053938356162" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="minValue">
+                                        <real key="value" value="1"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="maxValue">
+                                        <real key="value" value="100"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="image" keyPath="leftHandleImage" value="control-left"/>
+                                    <userDefinedRuntimeAttribute type="image" keyPath="rightHandleImage" value="control-right"/>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="handleDiameter">
+                                        <real key="value" value="28"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="selectedMinValue">
+                                        <real key="value" value="20"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="selectedMaxValue">
+                                        <real key="value" value="80"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </view>
@@ -57,4 +74,8 @@
             <point key="canvasLocation" x="116" y="117.39130434782609"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="control-left" width="32" height="32"/>
+        <image name="control-right" width="32" height="32"/>
+    </resources>
 </document>

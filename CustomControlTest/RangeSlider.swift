@@ -72,7 +72,6 @@ import UIKit
     var minLabel = UILabel()
     var maxLabel = UILabel()
     var selectedRange = CATextLayer()
-    var viewBetweenHandles = UIView()
     var offset = CGFloat()
     
     /// The minimum possible value to select in the range
@@ -101,7 +100,7 @@ import UIKit
     
     /// The preselected maximum value
     /// (note: This should be greater than the selectedMinValue)
-    @IBInspectable open var selectedMaxValue: CGFloat = 300.0 {
+    @IBInspectable open var selectedMaxValue: CGFloat = 200.0 {
         didSet {
             if selectedMaxValue > maxValue {
                 selectedMaxValue = maxValue
@@ -241,8 +240,6 @@ import UIKit
             handleTracking = .right
         }
         
-        
-        
         delegate?.didStartTouches(in: self)
         
         return true
@@ -256,25 +253,34 @@ import UIKit
         
         // find out the percentage along the line we are in x coordinate terms (subtracting half the frames width to account for moving the middle of the handle, not the left hand side)
         let percentage: CGFloat = (location.x - sliderLine.frame.minX - handleDiameter / 2.0) / (sliderLine.frame.maxX - sliderLine.frame.minX)
+        let percentageOfSliderMax: CGFloat = (sliderLineBetweenHandles.frame.maxX - sliderLine.frame.minX - handleDiameter / 2.0) / (sliderLine.frame.maxX - sliderLine.frame.minX)
+        let percentageOfSliderMin: CGFloat = (sliderLineBetweenHandles.frame.minX - sliderLine.frame.minX - handleDiameter / 2.0) / (sliderLine.frame.maxX - sliderLine.frame.minX)
         
         // multiply that percentage by self.maxValue to get the new selected minimum value
         let selectedValue: CGFloat = percentage * (maxValue - minValue) + minValue
+        let sliderMax: CGFloat = percentageOfSliderMax * (maxValue - minValue) + minValue
+        let sliderMin: CGFloat = percentageOfSliderMin * (maxValue - minValue) + minValue
         
         switch handleTracking {
         case .left:
             selectedMinValue = min(selectedValue, selectedMaxValue)
             updateHandlePositions()
         case .right:
-            // don't let the dots cross over, (unless range is disabled, in which case just dont let the dot fall off the end of the screen)
-            if selectedValue >= minValue {
-                selectedMaxValue = selectedValue
-            } else {
-                selectedMaxValue = max(selectedValue, selectedMinValue)
-            }
+            selectedMaxValue = max(selectedValue, selectedMinValue)
             updateHandlePositions()
         case .middle:
-            sliderLineBetweenHandles.position.x = location.x - offset
-            updateMiddleHandlePosition()
+            if sliderMax <= maxValue && sliderMin >= minValue {
+                
+                sliderLineBetweenHandles.position.x = location.x - offset
+                
+                selectedMinValue = min(sliderMin, selectedMaxValue)
+                if sliderMax >= minValue {
+                    selectedMaxValue = sliderMax
+                } else {
+                    selectedMaxValue = max(sliderMax, selectedMinValue)
+                }
+                updateMiddleHandlePosition()
+            }
         case .none:
             // no need to refresh the view because it is done as a side-effect of setting the property
             break
@@ -416,22 +422,6 @@ import UIKit
     
     fileprivate func refresh() {
         
-//        let diff: CGFloat = selectedMaxValue - selectedMinValue
-//
-//        if diff < minDistance {
-//            switch handleTracking {
-//            case .left:
-//                selectedMinValue = selectedMaxValue - minDistance
-//            case .right:
-//                selectedMaxValue = selectedMinValue + minDistance
-//            case .middle:
-//                selectedMinValue = selectedMaxValue - minDistance
-//                selectedMaxValue = selectedMinValue + minDistance
-//            case .none:
-//                break
-//            }
-//        }
-        
         // ensure the minimum and maximum selected values are within range. Access the values directly so we don't cause this refresh method to be called again (otherwise changing the properties causes a refresh)
         if selectedMinValue < minValue {
             selectedMinValue = minValue
@@ -439,12 +429,6 @@ import UIKit
         if selectedMaxValue > maxValue {
             selectedMaxValue = maxValue
         }
-        
-        // update the frames in a transaction so that the tracking doesn't continue until the frame has moved.
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        updateHandlePositions()
-        CATransaction.commit()
         
         updateColors()
         
